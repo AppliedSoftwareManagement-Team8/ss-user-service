@@ -1,5 +1,6 @@
 package com.ss.bth;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,17 @@ public class MongoDBUserService implements UserService {
         this.repository = repository;
     }
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
     @Override
     public UserDTO register(UserDTO user) {
         String activationCode = generateActivationCode(user.getPrimaryEmail());
+		
+        ActivationEmailDTO activationEmail = new ActivationEmailDTO();
+        activationEmail.setActivationCode(activationCode);
+        activationEmail.setEmail(user.getPrimaryEmail());
+
         User persistedUser = User.getBuilder()
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
@@ -44,7 +53,10 @@ public class MongoDBUserService implements UserService {
                 .setActivated(false)
                 .setBlocked(false)
                 .build();
-        return convertToDTO(repository.insert(persistedUser));
+
+		persistedUser = repository.insert(persistedUser);
+		rabbitTemplate.convertAndSend(RabbitMqConfiguration.ACTIVATION_EMAIL_QUEUE, activationEmail);
+        return convertToDTO(persistedUser);
     }
 
     @Override

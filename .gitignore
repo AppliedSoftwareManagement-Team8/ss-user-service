@@ -9,3 +9,5 @@ gradle-app.setting
 
 #webstorm
 .idea
+
+.DS_Store
