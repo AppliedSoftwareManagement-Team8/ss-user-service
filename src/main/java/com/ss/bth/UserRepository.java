@@ -2,6 +2,7 @@ package com.ss.bth;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 /**
  * Created by Samuil on 21-11-2015
  */
+@Repository
 public interface UserRepository extends MongoRepository<User, String> {
 
     @Query(fields="{ 'password' : 0, 'activationCode' : 0 }")

@@ -28,7 +28,7 @@ public class MongoDBUserService implements UserService {
     }
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    EmailQueueConfiguration emailQueueConfiguration;
 
     @Override
     public UserDTO register(UserDTO user) {
@@ -55,7 +55,7 @@ public class MongoDBUserService implements UserService {
                 .build();
 
 		persistedUser = repository.insert(persistedUser);
-		rabbitTemplate.convertAndSend(RabbitMqConfiguration.ACTIVATION_EMAIL_QUEUE, activationEmail);
+        emailQueueConfiguration.rabbitTemplate().convertAndSend(EmailQueueConfiguration.ACTIVATION_EMAIL_QUEUE, activationEmail);
         return convertToDTO(persistedUser);
     }
 
