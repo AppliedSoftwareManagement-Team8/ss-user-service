@@ -7,17 +7,23 @@ import java.util.List;
  */
 public interface UserService {
 
-    UserDTO register(UserDTO user);
+    UserDAO register(UserDAO user);
 
     void delete(String id);
 
-    List<UserDTO> findAll();
+    List<UserDAO> findAll();
 
-    UserDTO findById(String id);
+    UserDAO findById(String id);
 
-    UserDTO update(UserDTO user);
+    UserDAO update(UserUpdateDAO user);
 
-    UserDTO activateAccount(UserActivateDTO userActivateDTO);
+    UserDAO activateAccount(UserActivateDAO userActivateDAO);
 
-    UserDTO authenticate(UserAuthenticateDTO userAuthenticateDTO);
+    UserDAO authenticate(UserAuthenticateDAO userAuthenticateDAO);
+
+    UserDAO convertToDAO(User user);
+
+    UserUpdateDAO convertToUpdateDAO(UserDAO userDAO);
+
+    UserRepository getRepository();
 }

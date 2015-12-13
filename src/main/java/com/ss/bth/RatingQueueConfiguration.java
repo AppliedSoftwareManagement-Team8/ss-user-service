@@ -3,7 +3,6 @@ package com.ss.bth;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -45,7 +44,7 @@ public class RatingQueueConfiguration extends RabbitMqConfiguration{
     public DefaultClassMapper classMapper()
     {
         DefaultClassMapper typeMapper = new DefaultClassMapper();
-        typeMapper.setDefaultType(UserRatingDTO.class);
+        typeMapper.setDefaultType(UserRatingDAO.class);
         return typeMapper;
     }
 }

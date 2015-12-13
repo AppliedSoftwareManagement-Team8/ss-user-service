@@ -1,13 +1,9 @@
 package com.ss.bth;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.xml.bind.DatatypeConverter;
-
 import static java.util.stream.Collectors.toList;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -31,21 +27,22 @@ public class MongoDBUserService implements UserService {
     EmailQueueConfiguration emailQueueConfiguration;
 
     @Override
-    public UserDTO register(UserDTO user) {
+    public UserDAO register(UserDAO user) {
         String activationCode = generateActivationCode(user.getPrimaryEmail());
 		
-        ActivationEmailDTO activationEmail = new ActivationEmailDTO();
+        ActivationEmailDAO activationEmail = new ActivationEmailDAO();
         activationEmail.setActivationCode(activationCode);
         activationEmail.setEmail(user.getPrimaryEmail());
 
         User persistedUser = User.getBuilder()
+                .setRating(0)
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
                 .setPrimaryEmail(user.getPrimaryEmail())
                 .setSecondaryEmail(user.getSecondaryEmail())
                 .setPassword(user.getPassword())
                 .setAddress(user.getAddress())
-                .setZipCode(user.getZipCode())
+                .setZipCode(10000)
                 .setCity(user.getCity())
                 .setTelephone(user.getTelephone())
                 .setMobile(user.getMobile())
@@ -54,59 +51,72 @@ public class MongoDBUserService implements UserService {
                 .setBlocked(false)
                 .build();
 
-		persistedUser = repository.insert(persistedUser);
+		persistedUser = getRepository().insert(persistedUser);
         emailQueueConfiguration.rabbitTemplate().convertAndSend(EmailQueueConfiguration.ACTIVATION_EMAIL_QUEUE, activationEmail);
-        return convertToDTO(persistedUser);
+        return convertToDAO(persistedUser);
     }
 
     @Override
     public void delete(String id) {
-        repository.delete(id);
+        getRepository().delete(id);
     }
 
     @Override
-    public List<UserDTO> findAll() {
-        Stream<User> userEntries = repository.findAllBy();
+    public List<UserDAO> findAll() {
+        Stream<User> userEntries = getRepository().findAllBy();
         return convertToDTOs(userEntries.collect(Collectors.toList()));
     }
 
     @Override
-    public UserDTO findById(String id) {
-        return convertToDTO(repository.findOneById(id).get());
+    public UserDAO findById(String id) {
+        return convertToDAO(getRepository().findOneById(id).get());
     }
 
     @Override
-    public UserDTO update(UserDTO user) {
-        return null;
+    public UserDAO update(UserUpdateDAO user) {
+        User updatedUser = getRepository().findOne(user.getId());
+        updatedUser.update(
+                user.getRating(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getSecondaryEmail(),
+                user.getPassword(),
+                user.getAddress(),
+                user.getCity(),
+                user.getZipCode(),
+                user.getTelephone(),
+                user.getMobile(),
+                user.isBlocked()
+        );
+        getRepository().save(updatedUser);
+        return convertToDAO(getRepository().findOneById(user.getId()).get());
     }
 
     @Override
-    public UserDTO activateAccount(UserActivateDTO userActivateDTO) {
-        User user = repository.findByPrimaryEmail(userActivateDTO.getPrimaryEmail());
-        if (user.getPassword().equals(userActivateDTO.getPassword()) && user.getActivationCode().equals(userActivateDTO.getActivationCode())) {
+    public UserDAO activateAccount(UserActivateDAO userActivateDAO) {
+        User user = getRepository().findByPrimaryEmail(userActivateDAO.getPrimaryEmail());
+        if (user.getActivationCode().equals(userActivateDAO.getActivationCode())) {
             user.setActivated(true);
-            repository.save(user);
-            return convertToDTO(repository.findOneById(user.getId()).get());
+            getRepository().save(user);
+            return convertToDAO(getRepository().findOneById(user.getId()).get());
         }
         return null;
     }
 
     @Override
-    public UserDTO authenticate(UserAuthenticateDTO userAuthenticateDTO) {
-        User user = repository.findByPrimaryEmail(userAuthenticateDTO.getPrimaryEmail());
-        if (user.getPassword().equals(userAuthenticateDTO.getPassword()) && user.isActivated() && !user.isBlocked()) {
-            return convertToDTO(repository.findOneById(user.getId()).get());
+    public UserDAO authenticate(UserAuthenticateDAO userAuthenticateDAO) {
+        User user = getRepository().findByPrimaryEmail(userAuthenticateDAO.getPrimaryEmail());
+        if (user.getPassword().equals(userAuthenticateDAO.getPassword()) && user.isActivated() && !user.isBlocked()) {
+            return convertToDAO(getRepository().findOneById(user.getId()).get());
         }
         return null;
     }
 
-    private List<UserDTO> convertToDTOs(List<User> models) {
-        return models.stream().map(this::convertToDTO).collect(toList());
-    }
-
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
+    @Override
+    public UserDAO convertToDAO(User user) {
+        UserDAO dto = new UserDAO();
         dto.setId(user.getId());
+        dto.setRating(user.getRating());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setPrimaryEmail(user.getPrimaryEmail());
@@ -121,6 +131,33 @@ public class MongoDBUserService implements UserService {
         dto.setActivated(user.isActivated());
         dto.setBlocked(user.isBlocked());
         return dto;
+    }
+
+    @Override
+    public UserUpdateDAO convertToUpdateDAO(UserDAO userDAO) {
+        UserUpdateDAO dto = new UserUpdateDAO();
+        dto.setId(userDAO.getId());
+        dto.setRating(userDAO.getRating());
+        dto.setFirstName(userDAO.getFirstName());
+        dto.setLastName(userDAO.getLastName());
+        dto.setSecondaryEmail(userDAO.getSecondaryEmail());
+        dto.setPassword(userDAO.getPassword());
+        dto.setAddress(userDAO.getAddress());
+        dto.setZipCode(userDAO.getZipCode());
+        dto.setCity(userDAO.getCity());
+        dto.setTelephone(userDAO.getTelephone());
+        dto.setMobile(userDAO.getMobile());
+        dto.setBlocked(userDAO.isBlocked());
+        return dto;
+    }
+
+    @Override
+    public UserRepository getRepository() {
+        return repository;
+    }
+
+    private List<UserDAO> convertToDTOs(List<User> models) {
+        return models.stream().map(this::convertToDAO).collect(toList());
     }
 
     private String generateActivationCode(String primaryEmail) {

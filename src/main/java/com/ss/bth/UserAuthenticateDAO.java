@@ -6,14 +6,16 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Created by Samuil on 23-11-2015
  */
-public class UserAuthenticateDTO {
+public class UserAuthenticateDAO {
+
     @NotEmpty
     @Email
     private String primaryEmail;
+
     @NotEmpty
     private String password;
 
-    UserAuthenticateDTO() {}
+    UserAuthenticateDAO() {}
 
 
     public String getPrimaryEmail() {

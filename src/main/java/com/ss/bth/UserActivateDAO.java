@@ -6,16 +6,16 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Created by Samuil on 23-11-2015
  */
-public class UserActivateDTO {
+public class UserActivateDAO {
+
     @NotEmpty
     @Email
     private String primaryEmail;
-    @NotEmpty
-    private String password;
+
     @NotEmpty
     private String activationCode;
 
-    UserActivateDTO() {}
+    UserActivateDAO() {}
 
     public String getPrimaryEmail() {
         return primaryEmail;
@@ -23,14 +23,6 @@ public class UserActivateDTO {
 
     public void setPrimaryEmail(String primaryEmail) {
         this.primaryEmail = primaryEmail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getActivationCode() {

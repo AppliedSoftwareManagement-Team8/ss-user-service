@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService service;
 
@@ -22,12 +22,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    List<UserDTO> findAll() {
+    List<UserDAO> findAll() {
         return service.findAll();
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    UserDTO findById(@PathVariable("id") String id) {
+    UserDAO findById(@PathVariable("id") String id) {
         return service.findById(id);
     }
 
@@ -39,33 +39,33 @@ public class UserController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    UserDTO create(@RequestBody @Valid UserDTO userEntry) {
+    UserDAO create(@RequestBody @Valid UserDAO userEntry) {
         return service.register(userEntry);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    UserDTO update(@RequestBody @Valid UserDTO userEntry) {
+    UserDAO update(@RequestBody @Valid UserUpdateDAO userEntry) {
         return service.update(userEntry);
     }
 
     @RequestMapping(value = "/activate", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    UserDTO activateAccount(@RequestBody @Valid UserActivateDTO userActivateDTO) {
-        UserDTO userDTO = service.activateAccount(userActivateDTO);
-        if (userDTO == null) {
+    UserDAO activateAccount(@RequestBody @Valid UserActivateDAO userActivateDAO) {
+        UserDAO userDAO = service.activateAccount(userActivateDAO);
+        if (userDAO == null) {
             throw new IllegalArgumentException("The parameters are not valid!");
         }
-        return userDTO;
+        return userDAO;
     }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    UserDTO authenticate(@RequestBody @Valid UserAuthenticateDTO userAuthenticateDTO) {
-        UserDTO userDTO = service.authenticate(userAuthenticateDTO);
-        if (userDTO == null) {
+    UserDAO authenticate(@RequestBody @Valid UserAuthenticateDAO userAuthenticateDAO) {
+        UserDAO userDAO = service.authenticate(userAuthenticateDAO);
+        if (userDAO == null) {
             throw new IllegalArgumentException("The parameters are not valid!");
         }
-        return userDTO;
+        return userDAO;
     }
 }

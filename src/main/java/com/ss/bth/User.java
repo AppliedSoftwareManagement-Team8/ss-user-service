@@ -19,6 +19,7 @@ public final class User {
 
     @Id
     private String id;
+    private double rating;
     private String firstName;
     private String lastName;
     private String primaryEmail;
@@ -27,13 +28,14 @@ public final class User {
     private String address;
     private String city;
     private int zipCode;
-    private int telephone;
-    private int mobile;
+    private String telephone;
+    private String mobile;
     private String activationCode;
     private boolean isActivated;
     private boolean isBlocked;
 
-    public User() {}
+    public User() {
+    }
 
     private User(UserBuilder userBuilder) {
         this.firstName = userBuilder.firstName;
@@ -51,12 +53,39 @@ public final class User {
         this.isBlocked = userBuilder.isBlocked;
     }
 
-    public void update() {
-        //TODO Update
+    public void update(double rating, String firstName, String lastName, String secondaryEmail, String password,
+                       String address, String city, int zipCode, String telephone, String mobile, boolean isBlocked) {
+        StringUtil strUtil = new StringUtil();
+        if (rating >= 1 && rating <= 5)
+            this.rating = rating;
+        if (!strUtil.isBlank(firstName) && !strUtil.isEmpty(firstName) && strUtil.isLengthBetween(firstName, 2, 30))
+            this.firstName = firstName;
+        if (!strUtil.isBlank(lastName) && !strUtil.isEmpty(lastName) && strUtil.isLengthBetween(lastName, 2, 30))
+            this.lastName = lastName;
+        if (!strUtil.isBlank(secondaryEmail) && !strUtil.isEmpty(secondaryEmail))
+            this.secondaryEmail = secondaryEmail;
+        if (!strUtil.isBlank(password) && !strUtil.isEmpty(password))
+            this.password = password;
+        if (!strUtil.isBlank(address) && !strUtil.isEmpty(address) && strUtil.isLengthBetween(address, 5, 50))
+            this.address = address;
+        if (!strUtil.isBlank(city) && !strUtil.isEmpty(city) && strUtil.isLengthBetween(city, 2, 50))
+            this.city = city;
+        if (zipCode >= 10000 && zipCode <= 99999)
+            this.zipCode = zipCode;
+        if (!strUtil.isBlank(telephone) && !strUtil.isEmpty(telephone) && strUtil.isLengthBetween(telephone, 9, 10))
+            this.telephone = telephone;
+        if (!strUtil.isBlank(mobile) && !strUtil.isEmpty(mobile) && strUtil.isLengthBetween(mobile, 9, 10))
+            this.mobile = mobile;
+        if (this.isBlocked != isBlocked)
+            this.isBlocked = isBlocked;
     }
 
     public String getId() {
         return id;
+    }
+
+    public double getRating() {
+        return rating;
     }
 
     public String getFirstName() {
@@ -91,11 +120,11 @@ public final class User {
         return zipCode;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public int getMobile() {
+    public String getMobile() {
         return mobile;
     }
 
@@ -121,6 +150,7 @@ public final class User {
 
     static class UserBuilder {
 
+        private double rating;
         private String firstName;
         private String lastName;
         private String primaryEmail;
@@ -129,13 +159,18 @@ public final class User {
         private String address;
         private String city;
         private int zipCode;
-        private int telephone;
-        private int mobile;
+        private String telephone;
+        private String mobile;
         private String activationCode;
         private boolean isActivated;
         private boolean isBlocked;
 
         private UserBuilder() {
+        }
+
+        public UserBuilder setRating(double rating) {
+            this.rating = rating;
+            return this;
         }
 
         public UserBuilder setFirstName(String firstName) {
@@ -178,12 +213,12 @@ public final class User {
             return this;
         }
 
-        public UserBuilder setTelephone(int telephone) {
+        public UserBuilder setTelephone(String telephone) {
             this.telephone = telephone;
             return this;
         }
 
-        public UserBuilder setMobile(int mobile) {
+        public UserBuilder setMobile(String mobile) {
             this.mobile = mobile;
             return this;
         }
@@ -206,6 +241,40 @@ public final class User {
         User build() {
             User build = new User(this);
             return build;
+        }
+    }
+
+    public class StringUtil {
+
+        public boolean isEmpty(String str) {
+            if ((str != null) && (str.trim().length() > 0))
+                return false;
+            else
+                return true;
+        }
+
+        public boolean isBlank(String str) {
+            int strLen;
+            if (str == null || (strLen = str.length()) == 0) {
+                return true;
+            }
+            for (int i = 0; i < strLen; i++) {
+                if ((!Character.isWhitespace(str.charAt(i)))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public boolean isLengthBetween(String str, int min, int max) {
+            int strLen;
+            if (str == null || (strLen = str.length()) == 0) {
+                return false;
+            }
+            if (strLen >= min && strLen <= max)
+                return true;
+            else
+                return false;
         }
     }
 }

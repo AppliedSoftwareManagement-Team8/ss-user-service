@@ -3,14 +3,18 @@ package com.ss.bth;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
  * Created by Samuil on 21-11-2015
  */
-public class UserDTO {
+public class UserDAO {
 
     private String id;
+
+    private double rating;
 
     @Size(min = 2, max = 30)
     private String firstName;
@@ -28,15 +32,21 @@ public class UserDTO {
     @NotEmpty
     private String password;
 
+    @Size(min = 5, max = 50)
     private String address;
 
+    @Size(min = 2, max = 50)
     private String city;
 
+    @Min(10000)
+    @Max(99999)
     private int zipCode;
 
-    private int telephone;
+    @Size(min = 9, max = 10)
+    private String telephone;
 
-    private int mobile;
+    @Size(min = 9, max = 10)
+    private String mobile;
 
     private String activationCode;
 
@@ -44,7 +54,9 @@ public class UserDTO {
 
     private boolean isBlocked;
 
-    UserDTO() {
+    UserDAO() {
+        this.rating = 0;
+        this.zipCode = 10000;
     }
 
     public String getId() {
@@ -53,6 +65,14 @@ public class UserDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public String getFirstName() {
@@ -119,19 +139,19 @@ public class UserDTO {
         this.zipCode = zipCode;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 
-    public int getMobile() {
+    public String getMobile() {
         return mobile;
     }
 
-    public void setMobile(int mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
@@ -158,4 +178,5 @@ public class UserDTO {
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
     }
+
 }

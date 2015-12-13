@@ -3,12 +3,12 @@ package com.ss.bth;
 /**
  * Created by Samuil on 04-12-2015
  */
-public class UserRatingDTO {
+public class UserRatingDAO {
 
     private String id;
     private double rating;
 
-    public UserRatingDTO() {}
+    public UserRatingDAO() {}
 
     public String getId() {
         return id;
