@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Created by Samuil on 21-11-2015
  * A User Model class
  */
-@Document(collection = "user")
-@TypeAlias("user")
+@Document(collection = "users")
+@TypeAlias("users")
 @CompoundIndexes({
         @CompoundIndex(name = "email_code", def = "{'primaryEmail' : 1, 'activationCode': 1}", unique = true)
 })

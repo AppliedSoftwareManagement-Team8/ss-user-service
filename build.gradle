@@ -40,3 +40,7 @@ buildscript {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.5'
 }
+
+bootRun {
+    systemProperties System.properties
+}

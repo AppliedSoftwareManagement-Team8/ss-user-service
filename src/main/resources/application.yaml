@@ -1,0 +1,32 @@
+spring:
+  profiles: dev
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ss-user
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+---
+
+spring:
+  profiles: prod
+  data:
+    mongodb:
+      host: MONGO_SERVICE_HOST
+      port: MONGO_SERVICE_PORT
+      database: MONGO_SERVICE_DATABASE
+      username: MONGO_SERVICE_USERNAME
+      password: MONGO_SERVICE_PASSWORD
+  rabbitmq:
+    host: RABBITMQ_SERVICE_HOST
+    port: 5672
+    username: RABBITMQ_SERVICE_USERNAME
+    password: RABBITMQ_SERVICE_PASSWORD
+server:
+  error:
+    include-stacktrace: never
